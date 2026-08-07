@@ -6,13 +6,32 @@ Most of the skills come from https://github.com/mattpocock/skills - for now all 
 
 ### 1. Get the skills
 
+To take everything:
+
+```bash
+npx skills@latest add rosskuyper/skills --all
+```
+
+`--all` is shorthand for `--skill '*' --agent '*' -y` — every skill, every coding agent it detects, no prompts.
+
+Or pick and choose interactively:
+
 ```bash
 npx skills@latest add rosskuyper/skills
 ```
 
-Pick the skills you want, and which coding agents to install them on. **The installer lets you choose which skills to take — make sure `setup-skills` is one of them.**
+The picker has no select-all key, so use `--all` (or `--skill '*'`) if you want the lot. **If you are hand-picking, make sure `setup-skills` is one of them** — `triage`, `to-spec`, `to-tickets`, `code-review`, and `wayfinder` all read the config it writes.
 
-The skills are written into your repo as ordinary files you own and can edit. Nothing updates behind your back; pull later changes when you want them with `npx skills update`.
+Useful flags:
+
+| Flag | Effect |
+| ---- | ------ |
+| `--skill '*'` | Every skill, but still choose the agents |
+| `-a claude-code` | One agent only (see `--help` for the full list) |
+| `-g` | Install to `~/` so the skills work in every project, rather than just this one |
+| `-l` | List what's in the repo without installing anything |
+
+The skills are written as ordinary files you own and can edit. Nothing updates behind your back; pull later changes when you want them with `npx skills update`.
 
 ### 2. Run `/setup-skills`
 
