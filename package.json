@@ -1,0 +1,12 @@
+{
+  "name": "rosskuyper-skills",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ross Kuyper's skills",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rosskuyper/skills"
+  },
+  "license": "MIT",
+  "packageManager": "pnpm@11.18.0"
+}
