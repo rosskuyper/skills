@@ -31,6 +31,8 @@ Take whatever the user gave you — a project, an issue identifier, a spec file,
 
 **If the target is a spec with no breakdown**, stop and say so, and offer `/to-tickets` first. Build it directly only if the user hears that and still asks you to — a spec small enough to land in a single pass is possible, just rare enough to be worth confirming.
 
+The exception is a **single-slice spec**: an issue that `/to-spec` sized as one vertical slice and published whole, carrying its own Acceptance Criteria section. That is a unit of work, not a container missing its breakdown — build it, and don't offer `/to-tickets` against it.
+
 **A one-ticket work list is not a run.** Build it yourself, in this context, following the per-ticket steps in section 3 without the dispatch. The orchestration below is what a *container* resolves to.
 
 ### 2. Agree the run, once
