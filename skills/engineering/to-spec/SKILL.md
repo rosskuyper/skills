@@ -1,6 +1,6 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec and publish it to the repo's issue tracker — as a single issue when the work is one vertical slice, otherwise as a project with an overview and spec documents where the tracker has projects. No interview, just synthesis of what you've already discussed.
+description: Turn the current conversation into a spec and publish it to the repo's issue tracker — as a single issue when the work is one vertical slice, otherwise as a project with an overview and spec documents where the tracker has projects. Commits the session's design docs (glossary, ADRs) on a branch named for the spec. No interview, just synthesis of what you've already discussed.
 disable-model-invocation: true
 ---
 
@@ -42,14 +42,21 @@ Follow the "publish a spec" convention in `docs/agents/issue-tracker.md`. The sh
 - **Several slices, on a tracker with projects (Linear)** → a **project**, moved straight to its in-progress status, whose overview holds Problem Statement / Solution / Out of Scope / Further Notes and links onward to one **document** per remaining section: User Stories, Implementation Decisions, Testing Decisions. Don't apply a triage label — the project isn't a unit of work, the tickets inside it are. The tracker config carries the exact tool names and the overview shape.
 - **Several slices, on a tracker without projects (GitHub, GitLab, local markdown)** → a single issue carrying the entire spec as its body, under the template's headings. Apply the `ready-for-agent` triage label — no need for additional triage.
 
-### 6. Hand off
+### 6. Commit the design artifacts
 
-Report where the spec landed, with its URL. Then name the next step, which follows the size call, not the shape:
+The session that led here usually leaves design artifacts in the working tree — glossary updates (`CONTEXT.md`), ADRs, and on a local tracker the `.scratch/` spec files. Committed nowhere, they dangle through the breakdown and into the build, where they get lost or swept into some ticket's diff. Commit them now, on the feature's branch, so they ride ahead of every ticket commit:
 
-- **One vertical slice** → `/implement` against the issue. It resolves to that issue alone and builds it in one pass; there is nothing for `/to-tickets` to slice.
-- **Several slices** → `/to-tickets` against it, which breaks the spec into tracer-bullet tickets inside the same container.
+- If the tree holds no design artifacts, skip this step entirely.
+- Cut a branch named for the spec — the issue's generated branch name where the tracker provides one (Linear does, for a single-slice spec), otherwise the feature slug — and leave it checked out. `/to-tickets` and `/implement` continue on it, so the docs become the first commit of the feature's eventual PR.
+- Commit **only the design artifacts**, referencing the spec's URL in the message. Anything else sitting in the tree is not yours to commit — leave it and mention it in the hand-off.
+- Do not push or open a PR — that belongs to the implementation run.
 
-Do not run either yourself — what happens to the spec next is a decision the user drives.
+### 7. Hand off
+
+Report where the spec landed, with its URL, and the branch now carrying the design artifacts. Then the next step follows the size call, not the shape:
+
+- **One vertical slice** → name `/implement` against the issue as the next step. It resolves to that issue alone and builds it in one pass; there is nothing for `/to-tickets` to slice. Do not run it yourself — building is a decision the user drives.
+- **Several slices** → invite the user to type `/to-tickets` now, in this session, where the full design context still lives — the breakdown continues warm instead of re-fetching the spec cold. You cannot fire it yourself; it is user-invoked. Exception: if the spec came out of a long conversation and context is already deep, recommend running `/to-tickets` in a fresh session against the published spec instead — the spec exists precisely so the breakdown can start cold.
 
 <spec-template>
 

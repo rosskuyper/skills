@@ -43,6 +43,8 @@ Report the work list — each ticket, its state, its blockers — and the order 
 
 Read the spec once, now, before the first dispatch: the Implementation and Testing Decisions, and the seams agreed in `/to-spec`. Every brief you write is cut from it, and re-reading it per ticket wastes the context you are trying to protect.
 
+Start from the spec's branch where one exists — `/to-spec` commits the session's design artifacts (glossary, ADRs) as the first commit on a branch named for the spec, and the ticket commits belong on top of it, not on whatever happens to be checked out. If the working tree is dirty at run start, that's uncommitted work that isn't yours — stop and say so rather than letting it bleed into the first ticket's diff.
+
 ### 3. Run the loop
 
 Until the work list is empty, take the next **frontier** ticket — first in list order whose blockers are all complete — and:

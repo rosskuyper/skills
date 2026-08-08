@@ -16,6 +16,8 @@ The issue tracker and triage label vocabulary should have been provided to you �
 
 Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments.
 
+If `/to-spec` published the spec earlier in this same session, do not re-fetch it — the spec and the codebase exploration are already in context. The container it published (project or single issue) is the one the tickets belong to in step 5; note its identifier now.
+
 If the reference is a **project-shaped spec** — what `/to-spec` publishes on a tracker that has projects — follow the "fetch the spec" convention in `docs/agents/issue-tracker.md` and read the whole container: the overview, every attached document, and any issues already in it. The overview is a summary; the documents hold the user stories and the implementation and testing decisions you need to slice against. Note the container's identifier — the tickets go inside it in step 5.
 
 ### 2. Explore the codebase (optional)
@@ -64,7 +66,7 @@ Iterate until the user approves the breakdown.
 
 Publish the approved tickets. **How** depends on the tracker `/setup-skills` configured — the tickets are the same either way, only the shape of the blocking edges changes:
 
-- **Local files** → write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first, so waves stay contiguous in the numbering). Each file's "Blocked by" lists the numbers/titles it depends on, and its "Wave" names its phase. Use the per-ticket file template below — one ticket per file, never a single combined file.
+- **Local files** → write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first, so waves stay contiguous in the numbering). Each file's "Blocked by" lists the numbers/titles it depends on, and its "Wave" names its phase. Use the per-ticket file template below — one ticket per file, never a single combined file. Then commit the ticket files — on the spec's branch where `/to-spec` created one (it will be checked out, with the spec as its first commit), otherwise offer to commit them where you are — so the breakdown doesn't dangle uncommitted in the working tree.
 - **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking / sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Apply the `ready-for-agent` triage label unless instructed otherwise — the tickets are agent-grabbable by construction.
 
 **Where the source was a project-shaped spec**, the tickets belong inside that container, not loose beside it:
