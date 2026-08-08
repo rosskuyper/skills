@@ -1,12 +1,14 @@
 ---
 name: implement
-description: Build the work described by a spec, a project, or a ticket — resolve whatever you were given into an ordered work list, then build the frontier ticket with /tdd at the pre-agreed seams and /code-review before committing.
+description: Build the work described by a spec, a project, or a ticket — resolve whatever you were given into an ordered work list, then orchestrate it ticket by ticket, dispatching each slice to a fresh subagent that drives /tdd at the pre-agreed seams, verifying its work, and committing per ticket.
 disable-model-invocation: true
 ---
 
 # Implement
 
-Build the work. The first job is not writing code — it is working out **what the unit of work is**. Pointing this skill at a container and letting it implement the container is how a fifteen-slice project ends up built in one exhausted context.
+Build the work. Two jobs, in order: work out **what the unit of work is**, then **orchestrate the units** — you hold the spec, the work list and the running state; the subagents hold the code.
+
+**You are the orchestrator, not the builder.** Do not write the implementation yourself when the work list holds more than one ticket. `/to-tickets` sizes each slice to a single fresh context window, so building them all in your own context spends that budget before the last slice starts, and the run degrades exactly when it should be sharpest. Your context is the one thing that has to last the whole run.
 
 The issue tracker should have been provided to you — run `/setup-skills` if not.
 
@@ -25,45 +27,82 @@ Take whatever the user gave you — a project, an issue identifier, a spec file,
 | A spec with no breakdown yet | Nothing — see below |
 | Nothing | Whatever the conversation has already agreed |
 
-**A container is never a unit of work.** If what you were handed has been broken down, the breakdown is the work and the container is context. This is the failure the step exists to prevent: implementing a spec whose tickets already exist means building the whole feature in one pass and leaving every ticket open behind you.
+**A container is never a unit of work.** If what you were handed has been broken down, the breakdown is the work and the container is context. Implementing a spec whose tickets already exist means building the whole feature in one pass and leaving every ticket open behind you.
 
 **If the target is a spec with no breakdown**, stop and say so, and offer `/to-tickets` first. Build it directly only if the user hears that and still asks you to — a spec small enough to land in a single pass is possible, just rare enough to be worth confirming.
 
-### 2. Agree the scope
+**A one-ticket work list is not a run.** Build it yourself, in this context, following the per-ticket steps in section 3 without the dispatch. The orchestration below is what a *container* resolves to.
 
-Report the resolved work list: each ticket, its state, and which are on the **frontier** — the tickets whose blockers are all complete. Name the one you propose to take, which is the first frontier ticket in list order.
+### 2. Agree the run, once
 
-**Default to one ticket per run.** `/to-tickets` sizes each slice to fit a single fresh context window, and taking several at once spends that budget before the last one starts. Offer a whole wave, or the lot, only if the user asks — and say plainly that a long run degrades.
+Report the work list — each ticket, its state, its blockers — and the order you'll take it in. Then say plainly what the run will do: work unattended through every ticket, commit after each, and stop only on the conditions in section 4. Get one approval.
 
-If nothing is on the frontier, say which blockers are open rather than picking a blocked ticket anyway.
+**Then don't ask again.** Per-ticket confirmation is the thing this design exists to remove. The next time you address the user is the final report, or a stop condition.
 
-### 3. Load the ticket's context
+Read the spec once, now, before the first dispatch: the Implementation and Testing Decisions, and the seams agreed in `/to-spec`. Every brief you write is cut from it, and re-reading it per ticket wastes the context you are trying to protect.
 
-Read both halves before editing anything:
+### 3. Run the loop
 
-- **The ticket** — what to build, and its acceptance criteria.
-- **The spec it was cut from** — the Implementation and Testing Decisions, and the seams agreed in `/to-spec`. Fetch it via the "fetch the spec" convention. A ticket's acceptance criteria are not the spec; they assume it.
+Until the work list is empty, take the next **frontier** ticket — first in list order whose blockers are all complete — and:
 
-Also read the repo's domain glossary and any ADRs covering the area you're touching.
+**a. Start it.** Move it to the tracker's in-progress state, per the "start a ticket" convention.
 
-### 4. Build it
+**b. Brief a subagent.** It has none of your conversation, so anything you leave out is lost. Give it, in full:
 
-Move the ticket to the tracker's in-progress state before the first edit, so a parallel session doesn't take the same slice.
+- the ticket: what to build, and its acceptance criteria
+- the slice of the spec that governs it — the relevant Implementation and Testing Decisions, and the seams to test at
+- what the preceding tickets already landed, in a sentence or two, so it builds on them rather than around them
+- pointers to the repo's domain glossary and any ADRs covering the area
+- the instruction to use `/tdd` at those seams, and to report back: what changed, what tests it added, and anything it could not resolve
 
-Use `/tdd` where possible, at the pre-agreed seams.
+Dispatch it as a subagent so it gets a fresh context window. If your harness has no subagents, do the work inline but tell the user the run will degrade over a long list, and offer to split it.
 
-Run typechecking regularly, single test files regularly, and the full test suite once at the end.
+**c. Verify, don't trust.** Take the report as a claim and check it yourself before believing it:
 
-### 5. Close it out
+- the diff is non-empty and stays inside the ticket's scope
+- typechecking passes
+- the test suite passes — you run it, not the subagent
+- each acceptance criterion is actually met by what changed
 
-Use `/code-review` to review the work, and act on what it finds before going further.
+A subagent reporting success on work that doesn't compile is the failure mode this step exists for.
 
-Commit your work to the current branch, referencing the ticket in the commit message so the tracker links the two.
+**d. Review it.** Use `/code-review` on the slice. Apply what it finds, dispatching a follow-up subagent if the fix is substantial.
 
-Then close the ticket: move it to the tracker's completed state and tick off its acceptance criteria.
+**e. Commit it.** One commit per ticket, referencing the ticket, so a bad slice can be reverted without unpicking the run.
 
-### 6. Take stock
+**f. Close it.** Move the ticket to completed and tick off its acceptance criteria.
 
-Report what landed and what the work list looks like now — the next frontier ticket, and anything the completed ticket has just unblocked. Ask before taking it; a fresh context is the point.
+**g. Re-resolve the frontier.** Closing a ticket may unblock several. Recompute rather than walking the list you printed in step 2.
 
-When the list is empty and every ticket is complete, offer to move the container to its completed state. Nothing else closes the project `/to-spec` opened.
+Keep a short running log as you go — ticket, outcome, commit — so the final report doesn't depend on recalling twelve slices.
+
+### 4. When a ticket goes wrong
+
+Stop working *that ticket* when any of these hold:
+
+- typechecking or the test suite is still red after the subagent's attempt
+- `/code-review` raises something the subagent couldn't resolve
+- the subagent reports a decision the spec doesn't settle
+- the diff strays outside the ticket's scope
+
+Then: revert or park that ticket's changes so the tree stays green, leave the ticket in its in-progress state with a comment saying what blocked it, and **skip it along with everything blocked by it**. Carry on with the rest of the list.
+
+Do not halt the whole run. Stopping at ticket 3 of 12 because one slice was ambiguous wastes the unattended window that the rest of the list would have used. The exception is a failure that isn't ticket-shaped — a broken build on the base commit, a tracker you can't write to, the same failure on three consecutive tickets — where continuing just multiplies the damage. Stop there and say why.
+
+### 5. Report
+
+When the list is exhausted, report once:
+
+- what landed, ticket by ticket, with its commit
+- what was skipped, and the specific thing that blocked each one
+- what remains blocked behind the skips
+
+Then stop. Do not re-plan the skipped work — what to do about an ambiguous slice is the user's call, and `/grill-with-docs` or `/to-tickets` is usually the answer.
+
+If everything completed and the container is a project, offer to move it to its completed state. Nothing else closes the project `/to-spec` opened.
+
+## Running slices in parallel
+
+Serial is the default and usually correct: tracer-bullet slices in the same wave tend to touch the same seams, and concurrent builds against one working tree collide.
+
+Only when the user asks, and only for tickets you can see are disjoint, run a wave concurrently — each subagent in its own git worktree, merged back one at a time with the test suite run after each merge. Treat the merge cost as part of the decision, and say so before starting.

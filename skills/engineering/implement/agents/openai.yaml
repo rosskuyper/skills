@@ -1,5 +1,5 @@
 interface:
   display_name: "Implement"
-  short_description: "Build work from a spec or tickets"
+  short_description: "Orchestrate a spec's tickets into built work"
 policy:
   allow_implicit_invocation: false
