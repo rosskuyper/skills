@@ -30,9 +30,17 @@ Unlike GitHub, GitLab numbers issues and MRs separately, so `#42` is unambiguous
 
 Create a GitLab issue.
 
+## When a skill says "publish a spec"
+
+Create a single GitLab issue carrying the whole spec as its body. GitLab has no project-shaped container that holds documents, so the spec is not split up — every section becomes a heading in the one issue.
+
 ## When a skill says "fetch the relevant ticket"
 
 Run `glab issue view <number> --comments`.
+
+## When a skill says "fetch the spec"
+
+Same as fetching a ticket — `glab issue view <number> --comments`. The spec is the issue body.
 
 ## Wayfinding operations
 

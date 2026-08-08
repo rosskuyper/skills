@@ -130,7 +130,7 @@ Then write the docs files using the seed templates in this skill folder as a sta
 - [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
 - [domain.md](./domain.md) — domain doc consumer rules + layout
 
-Each template is a **starting point**, not a file to copy verbatim — fill in every placeholder it carries. On Linear that means the **Team** line (from Section A) and the real workflow-state names; leaving a placeholder in the written file hands the next session a config it can't act on.
+Each template is a **starting point**, not a file to copy verbatim — fill in every placeholder it carries. On Linear that means the **Team** line (from Section A) and the real workflow-state and project-status names; leaving a placeholder in the written file hands the next session a config it can't act on.
 
 For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
 

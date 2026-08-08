@@ -29,9 +29,17 @@ GitHub shares one number space across issues and PRs, so a bare `#42` may be eit
 
 Create a GitHub issue.
 
+## When a skill says "publish a spec"
+
+Create a single GitHub issue carrying the whole spec as its body. GitHub has no project-shaped container that holds documents, so the spec is not split up — every section becomes a heading in the one issue.
+
 ## When a skill says "fetch the relevant ticket"
 
 Run `gh issue view <number> --comments`.
+
+## When a skill says "fetch the spec"
+
+Same as fetching a ticket — `gh issue view <number> --comments`. The spec is the issue body.
 
 ## Wayfinding operations
 

@@ -4,7 +4,7 @@ Issues and specs for this repo live as Linear issues. Use the **Linear MCP serve
 
 ## Access
 
-Operations go through the Linear MCP server's tools, not a CLI — Linear has no first-party CLI. Discover the exact tool names once at the start of a session rather than trusting the names below: they vary by MCP client and server version. The conventional set is `list_issues`, `get_issue`, `create_issue`, `update_issue`, `list_comments`, `create_comment`, `list_issue_labels`, `list_issue_statuses`, `list_teams`, `list_users`.
+Operations go through the Linear MCP server's tools, not a CLI — Linear has no first-party CLI. Discover the exact tool names once at the start of a session rather than trusting the names below: they vary by MCP client and server version. The conventional set is `list_issues`, `get_issue`, `create_issue`, `update_issue`, `list_comments`, `create_comment`, `list_issue_labels`, `list_issue_statuses`, `list_teams`, `list_users`, plus the project-shaped tools listed under "Projects, documents and milestones".
 
 If the Linear MCP server isn't connected, **stop and tell the user** — don't fall back to writing local markdown files, because the issues other sessions expect to find won't be there. Setting it up is a one-time step the user must do themselves.
 
@@ -33,6 +33,19 @@ Linear's states are grouped into fixed **categories** — `triage`, `backlog`, `
 
 Linear also has a native **Triage** inbox (a queue for un-triaged incoming issues, enabled per team). Where it's on, that queue *is* the `needs-triage` role — prefer it to a label.
 
+## Projects, documents and milestones
+
+Linear has a container the label-only trackers don't: a **project**. A project holds an **overview** (its description — a full markdown document), any number of attached **documents**, an ordered list of **milestones**, and the issues that belong to it. Specs live in this shape; individual units of work stay as issues inside it.
+
+Conventional tool names, again worth discovering rather than trusting: `list_projects`, `get_project`, `create_project`, `update_project`, `list_documents`, `get_document`, `create_document`, `update_document`, `list_project_milestones`, `create_project_milestone`.
+
+- **Project status** — every project carries exactly one status, drawn from the fixed categories `backlog`, `planned`, `started`, `completed`, `canceled`. Display names are configurable per workspace, so resolve the real name before setting one — don't assume a workspace calls its `started` status "In Progress".
+- **Issues in a project** — `create_issue` (or `update_issue`) with the project set. An issue belongs to at most one project.
+- **Milestones** — ordered checkpoints inside a project, each holding a subset of its issues. Use them to group issues into delivery waves; an issue belongs to at most one milestone.
+- **Labels** — projects have their own label set, separate from issue labels. Triage roles are issue-level vocabulary; don't apply them to a project.
+
+**If the connected server exposes documents read-only** (older versions ship `get_document` / `list_documents` with no create), fold the content that would have been separate documents into the project description under its own headings, and tell the user that's what happened. The content lands whole either way — only the shape degrades.
+
 ## Pull requests as a triage surface
 
 **Not applicable.** Linear has no pull requests, so the PR-as-request-surface flag that the GitHub and GitLab trackers carry doesn't exist here. Code review happens on the git host; `/triage` covers Linear issues only.
@@ -43,9 +56,53 @@ Linear does link PRs to issues via its GitHub/GitLab integration (a magic word l
 
 Create a Linear issue on the recorded team.
 
+## When a skill says "publish a spec"
+
+A spec is bigger than an issue — publish it as a **project** on the recorded team, never as a single issue:
+
+1. `create_project` on the recorded team, named after the feature in the codebase's own domain vocabulary. Set its one-line summary to the problem in a sentence.
+2. Set the project description to the **overview** — Problem, Solution, Out of Scope, and a link to each spec document (see the shape below).
+3. Set its status to the workspace's `started` status (usually "In Progress"). A spec is written because the work is about to begin, so it does not sit in `planned`.
+4. Create one **document** per remaining spec section, attached to the project. Title each after its section.
+5. Go back and `update_project` so the overview's document links point at the real document URLs — they only exist once the documents do.
+
+<project-overview-shape>
+
+## Problem
+
+The problem the user is facing, from their perspective.
+
+## Solution
+
+The solution, from the user's perspective.
+
+## Out of scope
+
+What this work deliberately does not cover.
+
+## Spec documents
+
+- [User Stories](url)
+- [Implementation Decisions](url)
+- [Testing Decisions](url)
+
+## Further notes
+
+Anything that didn't belong in a document. Omit the heading if there is nothing.
+
+</project-overview-shape>
+
+Don't apply triage labels to the project — those are issue-level vocabulary, and the issues inside the project carry them.
+
 ## When a skill says "fetch the relevant ticket"
 
 `get_issue` for the identifier, plus `list_comments`.
+
+## When a skill says "fetch the spec"
+
+If the reference is a project (a project URL, a project name, or an issue whose project is set), read the whole container: `get_project` for the overview, `list_documents` + `get_document` for every attached document, and `list_issues` filtered to the project for the work already broken out of it. The overview alone is a summary, not the spec.
+
+If the reference is a bare issue with no project, `get_issue` plus `list_comments` is the spec.
 
 ## Wayfinding operations
 

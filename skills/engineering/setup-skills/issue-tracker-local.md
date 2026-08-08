@@ -14,9 +14,17 @@ Issues and specs for this repo live as markdown files in `.scratch/`.
 
 Create a new file under `.scratch/<feature-slug>/` (creating the directory if needed).
 
+## When a skill says "publish a spec"
+
+Write the whole spec to `.scratch/<feature-slug>/spec.md`, every section a heading in the one file. There is no project-shaped container here, so the spec is not split across files — the tickets `/to-tickets` produces sit alongside it under `.scratch/<feature-slug>/issues/`.
+
 ## When a skill says "fetch the relevant ticket"
 
 Read the file at the referenced path. The user will normally pass the path or the issue number directly.
+
+## When a skill says "fetch the spec"
+
+Read `.scratch/<feature-slug>/spec.md`, or the path the user passed.
 
 ## Wayfinding operations
 
