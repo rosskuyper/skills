@@ -26,6 +26,12 @@ _Avoid_: epic, spec issue
 An ordered delivery phase grouping the **Issues** `to-tickets` produces — a checkpoint you could stop at and still have something coherent. Maps to a Linear project milestone where the tracker has them.
 _Avoid_: phase, milestone (reserve "milestone" for the tracker's own object)
 
+**Work list**:
+The ordered **Issues** `implement` resolves a reference into before building anything — a **Project-shaped spec** expands to its **Issues** in **Wave** order, an **Issue** with children to its children, an **Issue** without them to itself.
+
+**Frontier**:
+The **Issues** in a **Work list** that are open and have no open blocker — the ones that can be started right now. `to-tickets`, `implement`, and `wayfinder` all work the frontier.
+
 **Triage role**:
 A canonical state-machine label applied to an **Issue** during triage (e.g. `needs-triage`, `ready-for-afk`). Each role maps to a real label string in the **Issue tracker** via `docs/agents/triage-labels.md`.
 
@@ -36,6 +42,7 @@ A canonical state-machine label applied to an **Issue** during triage (e.g. `nee
 - A **Decision ticket** is an **Issue** (a child of a `wayfinder:map`)
 - A **Project-shaped spec** holds one **Spec** and the **Issues** derived from it
 - An **Issue** derived from a **Spec** belongs to exactly one **Wave**
+- A **Work list** is the **Issues** a reference resolves to; its **Frontier** is the subset ready to start
 
 ## Flagged ambiguities
 

@@ -22,6 +22,20 @@ Write the whole spec to `.scratch/<feature-slug>/spec.md`, every section a headi
 
 Read the file at the referenced path. The user will normally pass the path or the issue number directly.
 
+## When a skill says "resolve the work list"
+
+Turn a reference into the ordered list of issues to actually work:
+
+- **A `.scratch/<feature-slug>/` directory** → every file under its `issues/`, in number order. The directory and its `spec.md` are containers, never units of work.
+- **A single issue file** → that file alone.
+- **A `spec.md` with no `issues/` beside it** → nothing; it hasn't been broken down yet.
+
+An issue is on the **frontier** when its own `Status:` is not `done` and every ticket in its `Blocked by:` line is `done`.
+
+## When a skill says "start a ticket"
+
+Set the file's `Status:` line to `in-progress` and save before the first edit; set it to `done` once the work is reviewed and committed. These two sit alongside the triage roles in `triage-labels.md` rather than replacing them — a ticket carries whichever describes it now.
+
 ## When a skill says "fetch the spec"
 
 Read `.scratch/<feature-slug>/spec.md`, or the path the user passed.

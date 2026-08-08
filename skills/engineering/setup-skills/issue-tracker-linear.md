@@ -22,6 +22,7 @@ Two facts to resolve before the first write, and to cache for the session:
 - **List issues**: `list_issues`, filtered by team, state, label, or assignee. Prefer filtering server-side over listing everything and filtering locally.
 - **Comment on an issue**: `create_comment`.
 - **Apply / remove labels**: `update_issue` with the full desired label set. Linear's update **replaces** the label list rather than adding to it, so read the current labels first and send the union — otherwise you silently strip labels another session applied.
+- **Start**: `update_issue` moving it to a state in the `started` category (usually `In Progress`). Do this before the first edit of a build session — it's how a parallel session sees the slice is taken.
 - **Close**: `update_issue` moving it to a state in the `completed` category (usually `Done`), or the `canceled` category for work that won't be done (see below).
 - **Identifiers**: Linear issues are referenced as `TEAM-123` (e.g. `ENG-42`), not `#42`. When a skill or commit message says `#42`, treat it as a bare number needing the team prefix, and confirm the match before acting on it.
 
@@ -43,6 +44,7 @@ Conventional tool names, again worth discovering rather than trusting: `list_pro
 - **Issues in a project** — `create_issue` (or `update_issue`) with the project set. An issue belongs to at most one project.
 - **Milestones** — ordered checkpoints inside a project, each holding a subset of its issues. Use them to group issues into delivery waves; an issue belongs to at most one milestone.
 - **Labels** — projects have their own label set, separate from issue labels. Triage roles are issue-level vocabulary; don't apply them to a project.
+- **Completing a project** — `update_project` to a `completed`-category status once every issue in it is `completed` or `canceled`. Linear does not do this on the last issue closing, so a project stays `started` forever unless something closes it.
 
 **If the connected server exposes documents read-only** (older versions ship `get_document` / `list_documents` with no create), fold the content that would have been separate documents into the project description under its own headings, and tell the user that's what happened. The content lands whole either way — only the shape degrades.
 
@@ -97,6 +99,21 @@ Don't apply triage labels to the project — those are issue-level vocabulary, a
 ## When a skill says "fetch the relevant ticket"
 
 `get_issue` for the identifier, plus `list_comments`.
+
+## When a skill says "resolve the work list"
+
+Turn a reference into the ordered list of issues to actually work:
+
+- **A project** → `list_issues` filtered to it. Order by milestone position, then by blocking edges within each milestone. The project itself is never a unit of work.
+- **An issue with sub-issues** → its children, same ordering. The parent is a container.
+- **An issue with no sub-issues** → that issue alone, *even when it belongs to a project*. Pointing at one ticket means one ticket; don't expand to its siblings.
+- **A document** → the project it's attached to, resolved as above.
+
+An issue is on the **frontier** when it sits in an incomplete state and every issue in its `blocked by` relations sits in a `completed` or `canceled` state.
+
+## When a skill says "start a ticket"
+
+`update_issue` moving it to a `started`-category state, and assign it to the driving dev, before the first edit. Close it by moving it to a `completed`-category state once the work is reviewed and committed.
 
 ## When a skill says "fetch the spec"
 

@@ -38,6 +38,20 @@ Create a single GitLab issue carrying the whole spec as its body. GitLab has no 
 
 Run `glab issue view <number> --comments`.
 
+## When a skill says "resolve the work list"
+
+Turn a reference into the ordered list of issues to actually work:
+
+- **An issue with children** — child issues carrying `Part of #<n>`, or the members of an epic on tiers that have them → those children, ordered by their blocking edges. The parent is a container, never a unit of work.
+- **An issue with no children** → that issue alone.
+- **A spec issue with neither** → nothing; it hasn't been broken down yet.
+
+An issue is on the **frontier** when it is open and has no open blocker — no native `blocked_by` link to an open issue (`glab api projects/:id/issues/:iid/links`), and every issue in its `Blocked by:` line closed.
+
+## When a skill says "start a ticket"
+
+`glab issue update <number> --assignee @me` before the first edit, so a parallel session sees the slice is taken. Close it with `glab issue close <number>` when it's done.
+
 ## When a skill says "fetch the spec"
 
 Same as fetching a ticket — `glab issue view <number> --comments`. The spec is the issue body.

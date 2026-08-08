@@ -37,6 +37,20 @@ Create a single GitHub issue carrying the whole spec as its body. GitHub has no 
 
 Run `gh issue view <number> --comments`.
 
+## When a skill says "resolve the work list"
+
+Turn a reference into the ordered list of issues to actually work:
+
+- **An issue with sub-issues** (`gh api repos/<owner>/<repo>/issues/<n>/sub_issues`) → its children, ordered by their blocking edges. The parent is a container, never a unit of work. Where sub-issues aren't enabled, read the task list in the parent body instead.
+- **An issue with no children** → that issue alone.
+- **A spec issue with neither** → nothing; it hasn't been broken down yet.
+
+An issue is on the **frontier** when it is open and has no open blocker — `issue_dependencies_summary.blocked_by` is `0`, or every issue in its `Blocked by:` line is closed.
+
+## When a skill says "start a ticket"
+
+`gh issue edit <number> --add-assignee @me` before the first edit, so a parallel session sees the slice is taken. Close it with `gh issue close <number>` when it's done.
+
 ## When a skill says "fetch the spec"
 
 Same as fetching a ticket — `gh issue view <number> --comments`. The spec is the issue body.
