@@ -10,10 +10,16 @@ Work the tree in **rounds**. The **frontier** is every decision whose prerequisi
 Each question should be formatted like so:
 
 ```
-❓ **Q1** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
+❓ **Q1** - **<question title>**: <question body, might be multiple paragraphs>
+
+- **A)** <first option>
+- **B)** <second option>
+- **C)** <third option>
 
 ➡️ <your recommended answer>
 ```
+
+When a question offers choices, each one gets its own list item on its own line — never run them together inside a sentence. Drop the list entirely for open questions that don't have a fixed set of answers.
 
 Each round the user answers reshapes the tree — settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
