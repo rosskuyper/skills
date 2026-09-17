@@ -159,7 +159,7 @@ Skills for daily code work.
 - **[setup-skills](./skills/engineering/setup-skills/SKILL.md)** — Configure this repo for the engineering skills (issue tracker, triage labels, domain doc layout). Run once per repo before using the other engineering skills.
 - **[to-spec](./skills/engineering/to-spec/SKILL.md)** — Turn the current conversation into a spec and publish it to the issue tracker. Work that is one vertical slice lands as a single issue with its own acceptance criteria, ready for `/implement`. Anything larger lands as an in-progress project whose overview links to a document per spec section on Linear, or a single issue elsewhere. Commits the session's design docs (glossary, ADRs) on a branch named for the spec. No interview — just synthesizes what you've already discussed.
 - **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break any plan, spec, or conversation into a set of tracer-bullet tickets, each declaring its blocking edges — written as text in a local file, or as native blocking links on a real tracker, landing inside the spec's project and grouped into a milestone per delivery wave.
-- **[implement](./skills/engineering/implement/SKILL.md)** — Build the work described by a spec, project, or ticket. Resolves whatever you point it at into an ordered work list, then orchestrates it unattended — a fresh subagent per slice driving `/tdd` at the pre-agreed seams, its work verified and `/code-review`ed and committed ticket by ticket.
+- **[implement](./skills/engineering/implement/SKILL.md)** — Orchestrate a spec, project, or ticket with a capable coordinator, fresh implementation workers, and delegated validation, review, and per-ticket commits. Route routine checks to smaller models and retain compact evidence summaries.
 - **[wayfinder](./skills/engineering/wayfinder/SKILL.md)** — Plan a huge chunk of work, more than one agent session can hold, as a shared map of decision tickets on the issue tracker — resolve them one at a time until the way to the destination is clear.
 
 **Model-invoked**
@@ -192,3 +192,7 @@ General workflow tools, not code-specific.
 ## Credits
 
 These skills are derived from [mattpocock/skills](https://github.com/mattpocock/skills) by Matt Pocock, used under the MIT license. This fork trims the set, defaults the issue tracker to Linear, and diverges from upstream — bugs here are mine, not his. See [LICENSE](./LICENSE).
+
+## Maintaining this repository
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for reproducible skill validation with uv.
