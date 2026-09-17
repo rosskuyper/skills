@@ -192,3 +192,7 @@ General workflow tools, not code-specific.
 ## Credits
 
 These skills are derived from [mattpocock/skills](https://github.com/mattpocock/skills) by Matt Pocock, used under the MIT license. This fork trims the set, defaults the issue tracker to Linear, and diverges from upstream — bugs here are mine, not his. See [LICENSE](./LICENSE).
+
+## Maintaining this repository
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for reproducible skill validation with uv.
