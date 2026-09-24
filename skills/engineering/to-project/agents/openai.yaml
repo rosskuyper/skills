@@ -1,0 +1,5 @@
+interface:
+  display_name: "To Project"
+  short_description: "Publish a spec and tickets, then review"
+policy:
+  allow_implicit_invocation: false
