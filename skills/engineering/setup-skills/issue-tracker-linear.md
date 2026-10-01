@@ -115,6 +115,14 @@ An issue is on the **frontier** when it sits in an incomplete state and every is
 
 `update_issue` moving it to a `started`-category state, and assign it to the driving dev, before the first edit. Close it by moving it to a `completed`-category state once the work is reviewed and committed.
 
+## When a skill says "begin the spec"
+
+If the spec is a project, `update_project` to the workspace's `started`-category status if it isn't there already. A bare issue with no project needs nothing.
+
+## When a skill says "finish the spec"
+
+If the spec is a project, complete it: `update_project` to a `completed`-category status once every issue in it is `completed` or `canceled` (see "Completing a project" above). A bare issue with no project needs nothing.
+
 ## When a skill says "fetch the spec"
 
 If the reference is a project (a project URL, a project name, or an issue whose project is set), read the whole container: `get_project` for the overview, `list_documents` + `get_document` for every attached document, and `list_issues` filtered to the project for the work already broken out of it. The overview alone is a summary, not the spec.

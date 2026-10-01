@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Scaffold the per-repo configuration that the engineering skills assume:
 
-- **Issue tracker** — where issues live (Linear by default; GitHub, GitLab, and local markdown are also supported out of the box)
+- **Issue tracker** — where specs and tickets live (local markdown under `docs/specs/` by default; Linear, GitHub, and GitLab are also supported out of the box)
 - **Triage labels** — the strings used for the five canonical triage roles
 - **Domain docs** — where `CONTEXT.md` and ADRs live, and the consumer rules for reading them
 
@@ -20,13 +20,14 @@ This is a prompt-driven skill, not a deterministic script. Explore, present what
 
 Look at the current repo to understand its starting state. Read whatever exists; don't assume:
 
-- Is the Linear MCP server connected? (Linear tools in your available tools.) This decides whether Section A's default is actionable.
+- Is the Linear MCP server connected? (Linear tools in your available tools.) Context only: it decides whether Linear is actionable if the user picks it.
 - `git remote -v` and `.git/config` — where does this repo live? Context only: the remote does **not** pick the issue tracker (see Section A).
 - `AGENTS.md` and `CLAUDE.md` at the repo root — does either exist? Is there already an `## Agent skills` section in either?
 - `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/` — does this skill's prior output already exist?
-- `.scratch/` — sign that a local-markdown issue tracker convention is already in use
+- `docs/specs/` — sign that the local-markdown tracker convention is already in use
+- `.gitignore` — does it already list `.scratch/`?
 - Is the `triage` skill installed? (a `triage` skill folder alongside this one, or `triage` in your available skills.) This decides whether Section B runs at all.
 - Monorepo signals — a `pnpm-workspace.yaml`, a `workspaces` field in `package.json`, or a populated `packages/*` with its own `src/`. Present only in a genuinely large multi-package repo; their absence means single-context, which is almost every repo.
 
@@ -38,23 +39,25 @@ Lead each section with the recommended answer so the user can accept it in a wor
 
 **Section A — Issue tracker.**
 
-> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to create a Linear issue, call `gh issue create`, write a markdown file under `.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
+> Explainer: The "issue tracker" is where specs and tickets live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to write markdown files under `docs/specs/`, create a Linear issue, call `gh issue create`, or follow some other workflow you describe. The local default commits specs and tickets as repo history beside the ADRs; pick a hosted tracker if that's where you actually track work for this repo.
 
-Default posture: **Linear**. Ask for confirmation in one line — "Issue tracker: **Linear** (recommended). Confirm, or name another?" — and move on the moment the user accepts.
+Default posture: **Local markdown**. Ask for confirmation in one line — "Issue tracker: **local markdown under `docs/specs/`** (recommended). Confirm, or name another?" — and move on the moment the user accepts.
 
-**Do not infer the tracker from the git remote.** Almost every repo has a GitHub remote regardless of where its work is actually tracked, so the remote is a bad signal and would fight the default every time. Mention what you found as an aside at most ("remote points at GitHub, but defaulting to Linear — say the word to switch").
+**Do not infer the tracker from the git remote.** Almost every repo has a GitHub remote regardless of where its work is actually tracked, so the remote is a bad signal and would fight the default every time. Mention what you found as an aside at most ("remote points at GitHub, but defaulting to local markdown — say the word to switch").
 
 The full set of options — spell these out only if the user declines the default:
 
-- **Linear** (default) — issues live in Linear (uses the Linear MCP server; there is no first-party CLI)
+- **Local markdown** (default) — specs and tickets live as committed files under `docs/specs/<YYYY-MM-DD>-<feature>/` in this repo
+- **Linear** — issues live in Linear (uses the Linear MCP server; there is no first-party CLI)
 - **GitHub** — issues live in the repo's GitHub Issues (uses the `gh` CLI)
 - **GitLab** — issues live in the repo's GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
-- **Local markdown** — issues live as files under `.scratch/<feature>/` in this repo (good for solo projects or repos without a remote)
 - **Other** (Jira, Shortcut, etc.) — ask the user to describe the workflow in one paragraph; the skill will record it as freeform prose
 
 **If Linear is chosen but exploration found no Linear MCP server**, say so and ask whether to connect it first or pick another tracker — don't write a Linear config the agent can't act on.
 
 Record the choice in `docs/agents/issue-tracker.md`.
+
+**On local markdown**, make sure `.scratch/` is in the repo's `.gitignore` — append it if exploration found it missing. It holds throwaway state such as `/implement`'s run ledger; specs and tickets live in `docs/specs/` and are committed.
 
 **On Linear**, resolve the **team** as part of this section — Linear scopes issues to a team, and the skills need it before their first write. If there's exactly one team, use it silently; if there are several, ask once and record the answer in the written file. Linear has no pull requests, so skip the PR flag below entirely.
 
@@ -86,6 +89,7 @@ Show the user a draft of:
 
 - The `## Agent skills` block to add to whichever of `CLAUDE.md` / `AGENTS.md` is being edited (see step 4 for selection rules)
 - The contents of `docs/agents/issue-tracker.md`, `docs/agents/domain.md`, and `docs/agents/triage-labels.md` (the last only when `triage` is installed)
+- On local markdown, the `.scratch/` line to append to `.gitignore` (only if it's missing)
 
 Let them edit before writing.
 
@@ -123,10 +127,10 @@ Include the `### Triage labels` sub-block, and write `docs/agents/triage-labels.
 
 Then write the docs files using the seed templates in this skill folder as a starting point:
 
-- [issue-tracker-linear.md](./issue-tracker-linear.md) — Linear issue tracker (the default)
+- [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker (the default)
+- [issue-tracker-linear.md](./issue-tracker-linear.md) — Linear issue tracker
 - [issue-tracker-github.md](./issue-tracker-github.md) — GitHub issue tracker
 - [issue-tracker-gitlab.md](./issue-tracker-gitlab.md) — GitLab issue tracker
-- [issue-tracker-local.md](./issue-tracker-local.md) — local-markdown issue tracker
 - [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
 - [domain.md](./domain.md) — domain doc consumer rules + layout
 

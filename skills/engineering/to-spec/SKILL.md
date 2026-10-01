@@ -1,6 +1,6 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec and publish it to the repo's issue tracker — as a single issue when the work is one vertical slice, otherwise as a project with an overview and spec documents where the tracker has projects. Commits the session's design docs (glossary, ADRs) on a branch named for the spec. No interview, just synthesis of what you've already discussed.
+description: Turn the current conversation into a spec and publish it to the configured tracker — by default a `docs/specs/` folder (plus one ticket when the work is a single vertical slice); on a hosted tracker a single issue, or a project with spec documents where the tracker has projects and the work is several slices. Commits the design docs (glossary, ADRs, spec folder) on a branch named for the feature. No interview, just synthesis of what you've already discussed.
 disable-model-invocation: true
 ---
 
@@ -12,7 +12,7 @@ The issue tracker and triage label vocabulary should have been provided to you �
 
 ### 1. Explore
 
-Explore the repo to understand the current state of the codebase, if you haven't already. Use the codebase's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
+Explore the repo to understand the current state of the codebase, if you haven't already. Use the codebase's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching. Prior specs in `docs/specs/` are the spec archive: consult them through `/recall`, never read them directly.
 
 ### 2. Agree the seams
 
@@ -38,24 +38,25 @@ Scale the spec to the call you just made. A one-slice spec fills the same headin
 
 Follow the "publish a spec" convention in `docs/agents/issue-tracker.md`. The shape follows from the size call and the tracker:
 
-- **One vertical slice, any tracker** → a single issue carrying the entire spec as its body, under the template's headings, including Acceptance Criteria. Apply the `ready-for-agent` triage label. Do **not** open a project for it, even on a tracker that has them — the issue is the unit of work, and a container around one ticket just hides it.
+- **Local markdown (the default), any size** → write `docs/specs/<YYYY-MM-DD>-<feature-slug>/spec.md`, dated today: `# <Title>`, then `Status: ready`, then every template heading in the one file. For **one vertical slice**, also write `tickets/01-<slug>.md` beside it, in the ticket header order (`# 01 — <Title>`, `Status: ready-for-agent`, `Wave: 1`, blank line, `## What to build`, `## Acceptance criteria`), whose What to build says "Implement `spec.md`" and whose Acceptance criteria are the spec's criteria as checkboxes. For **several slices**, `spec.md` only — `/to-tickets` adds `tickets/` beside it.
+- **One vertical slice, hosted tracker** → a single issue carrying the entire spec as its body, under the template's headings, including Acceptance Criteria. Apply the `ready-for-agent` triage label. Do **not** open a project for it, even on a tracker that has them — the issue is the unit of work, and a container around one ticket just hides it.
 - **Several slices, on a tracker with projects (Linear)** → a **project**, moved straight to its in-progress status, whose overview holds Problem Statement / Solution / Out of Scope / Further Notes and links onward to one **document** per remaining section: User Stories, Implementation Decisions, Testing Decisions. Don't apply a triage label — the project isn't a unit of work, the tickets inside it are. The tracker config carries the exact tool names and the overview shape.
-- **Several slices, on a tracker without projects (GitHub, GitLab, local markdown)** → a single issue carrying the entire spec as its body, under the template's headings. Apply the `ready-for-agent` triage label — no need for additional triage.
+- **Several slices, on a hosted tracker without projects (GitHub, GitLab)** → a single issue carrying the entire spec as its body, under the template's headings. Apply the `ready-for-agent` triage label — no need for additional triage.
 
 ### 6. Commit the design artifacts
 
-The session that led here usually leaves design artifacts in the working tree — glossary updates (`CONTEXT.md`), ADRs, and on a local tracker the `.scratch/` spec files. Committed nowhere, they dangle through the breakdown and into the build, where they get lost or swept into some ticket's diff. Commit them now, on the feature's branch, so they ride ahead of every ticket commit:
+The session that led here usually leaves design artifacts in the working tree — glossary updates (`CONTEXT.md`), ADRs, and on a local tracker the `docs/specs/<YYYY-MM-DD>-<feature-slug>/` folder. Committed nowhere, they dangle through the breakdown and into the build, where they get lost or swept into some ticket's diff. Commit them now, on the feature's branch, so they ride ahead of every ticket commit:
 
-- If the tree holds no design artifacts, skip this step entirely.
-- Cut a branch named for the spec — the issue's generated branch name where the tracker provides one (Linear does, for a single-slice spec), otherwise the feature slug — and leave it checked out. `/to-tickets` and `/implement` continue on it, so the docs become the first commit of the feature's eventual PR.
-- Commit **only the design artifacts**, referencing the spec's URL in the message. Anything else sitting in the tree is not yours to commit — leave it and mention it in the hand-off.
+- If the tree holds no design artifacts (possible only on a hosted tracker), skip this step entirely.
+- Cut a branch named `<feature-slug>` — the spec folder's slug, without the date — and leave it checked out. `/to-tickets` and `/implement` continue on it, so the docs become the first commit of the feature's eventual PR.
+- Commit **only the design artifacts**, referencing the spec in the message by path (local) or URL (hosted tracker). Anything else sitting in the tree is not yours to commit — leave it and mention it in the hand-off.
 - Do not push or open a PR — that belongs to the implementation run.
 
 ### 7. Hand off
 
-Report where the spec landed, with its URL, and the branch now carrying the design artifacts. Then the next step follows the size call, not the shape:
+Report where the spec landed — its `spec.md` path on a local tracker, its URL on a hosted one — and the branch now carrying the design artifacts. Then the next step follows the size call, not the shape:
 
-- **One vertical slice** → name `/implement` against the issue as the next step. It resolves to that issue alone and builds it in one pass; there is nothing for `/to-tickets` to slice. Do not run it yourself — building is a decision the user drives.
+- **One vertical slice** → name `/implement` against the ticket as the next step — `tickets/01-<slug>.md` locally, the issue on a hosted tracker. It resolves to that ticket alone and builds it in one pass; there is nothing for `/to-tickets` to slice. Do not run it yourself — building is a decision the user drives.
 - **Several slices** → invite the user to type `/to-tickets` now, in this session, where the full design context still lives — the breakdown continues warm instead of re-fetching the spec cold. You cannot fire it yourself; it is user-invoked. Exception: if the spec came out of a long conversation and context is already deep, recommend running `/to-tickets` in a fresh session against the published spec instead — the spec exists precisely so the breakdown can start cold.
 
 <spec-template>
