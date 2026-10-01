@@ -12,9 +12,9 @@ This workflow is self-contained; do not invoke `/to-spec` or `/to-tickets`, or r
 
 ## 1. Gather context and choose the seams
 
-Synthesize what is already known; do not restart the interview. Read any supplied spec reference in full, including comments. For a project-shaped spec, follow the "fetch the spec" convention in `docs/agents/issue-tracker.md`: read the overview, attached documents, and existing issues. Reuse context already available in this session.
+Synthesize what is already known; do not restart the interview. Read any supplied spec reference in full, including comments. Follow the "fetch the spec" convention in `docs/agents/issue-tracker.md`: for a local spec, read its `docs/specs/<YYYY-MM-DD>-<feature-slug>/spec.md`; for a project-shaped spec, read the overview, attached documents, and existing issues. Reuse context already available in this session.
 
-Explore the codebase if needed. Use its domain glossary vocabulary and respect existing ADRs. Choose the highest practical testing seams, preferring existing seams and as few as possible; ideally one.
+Explore the codebase if needed. Use its domain glossary vocabulary and respect existing ADRs. Prior specs in `docs/specs/` are the spec archive: consult them through `/recall`, never read them directly. Choose the highest practical testing seams, preferring existing seams and as few as possible; ideally one.
 
 Read the configured issue tracker and triage vocabulary. If configuration is missing, ask for the missing destination or configuration; the user can run `/setup-skills`. Resolve only information that prevents completion. For routine uncertainty about seams, sizing, or breakdown, make a reasonable choice within the discussed scope, record the assumption, and continue without confirmation.
 
@@ -39,17 +39,18 @@ Make sections stand on their own because they may be published separately. Avoid
 
 Follow the "publish a spec" convention in `docs/agents/issue-tracker.md`, using its exact tool names and overview shape:
 
-- **One slice, any tracker:** create a single issue with the entire spec, including Acceptance Criteria, and apply `ready-for-agent`. Do not create a project or a duplicate implementation ticket. Skip ticket breakdown and proceed to the artifact commit and final review.
+- **Local markdown (the default), any size:** write `docs/specs/<YYYY-MM-DD>-<feature-slug>/spec.md`, dated today: `# <Title>`, then `Status: ready`, then every heading in the one file. For one slice, also write `tickets/01-<slug>.md` beside it — `# 01 — <Title>`, `Status: ready-for-agent`, `Wave: 1`, blank line, `## What to build` saying "Implement `spec.md`", and `## Acceptance criteria` repeating the spec's criteria as checkboxes — then skip ticket breakdown. For several slices, `spec.md` only; step 6 adds `tickets/`.
+- **One slice, hosted tracker:** create a single issue with the entire spec, including Acceptance Criteria, and apply `ready-for-agent`. Do not create a project or a duplicate implementation ticket. Skip ticket breakdown and proceed to the artifact commit and final review.
 - **Several slices, tracker with projects (Linear):** create an in-progress project. Its overview holds Problem Statement, Solution, Out of Scope, and Further Notes, with links to a document per remaining section: User Stories, Implementation Decisions, Testing Decisions. Do not apply a triage label to the project.
-- **Several slices, tracker without projects (GitHub, GitLab, local markdown):** create one issue containing the entire spec and apply `ready-for-agent`.
+- **Several slices, hosted tracker without projects (GitHub, GitLab):** create one issue containing the entire spec and apply `ready-for-agent`.
 
 Record the container identifier for ticket publication. If continuing a partially completed run or working from an already published spec, inspect and reuse the existing artifacts instead of creating duplicates. After an uncertain write result, check the tracker before retrying. Report any publication failure and the artifacts already created; do not claim completion while required writes are missing.
 
 ## 4. Commit the design artifacts
 
-If the session left design artifacts (`CONTEXT.md`, ADRs, or local `.scratch/` spec files), commit them on a branch named for the spec. Use the issue's generated branch name where available, otherwise the feature slug. Leave it checked out so implementation can continue there. Reuse the feature branch on a resumed run.
+Commit the design artifacts (`CONTEXT.md`, ADRs, and on a local tracker the `docs/specs/<YYYY-MM-DD>-<feature-slug>/` folder) on a branch named `<feature-slug>` — the spec folder's slug, without the date. Leave it checked out so implementation can continue there. Reuse the feature branch on a resumed run.
 
-Commit only the session's design artifacts, referencing the spec URL (or local path) in the message. Leave unrelated changes untouched and mention them in the final review. If there are no design artifacts, skip this step. Do not push or open a PR.
+Commit only the session's design artifacts, referencing the spec by path (local) or URL (hosted tracker) in the message. Leave unrelated changes untouched and mention them in the final review. If there are no design artifacts (possible only on a hosted tracker), skip this step. Do not push or open a PR.
 
 ## 5. Draft the tickets and waves
 
@@ -65,16 +66,16 @@ Check that the tickets cover the spec, have observable acceptance criteria, and 
 
 Publish in dependency order, blockers first, keeping waves contiguous where possible.
 
-- **Local files:** write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01`. Include the number and title, **What to build**, **Blocked by** (numbers/titles, or “None — can start immediately”), **Wave**, **Status: ready-for-agent**, and acceptance-criteria checkboxes. Commit these files on the spec's branch. If none was needed earlier, create the feature branch now and commit the ticket files there without an additional confirmation.
-- **A real tracker:** create one issue per ticket and apply `ready-for-agent` unless instructed otherwise. Include **Parent** (reference the source issue; omit for a project-shaped spec), **What to build**, **Acceptance criteria** (checkboxes), and **Blocked by** (real issue references or “None — can start immediately”). Use native blocking/sub-issue relationships where supported; otherwise record blockers in the body. Describe end-to-end behaviour, not layer-by-layer implementation tasks.
+- **Local files:** write one file per ticket under `docs/specs/<YYYY-MM-DD>-<feature-slug>/tickets/<NN>-<slug>.md`, beside `spec.md`, numbered from `01`. Header in this order: `# <NN> — <Title>`, `Status: ready-for-agent`, `Wave: <wave number>`, `Blocked by: <gating ticket numbers in this feature, cross-feature ones by path>` (omit when unblocked); then a blank line, `## What to build`, and `## Acceptance criteria` as checkboxes. Commit these files on the spec's branch. If none was needed earlier, create the feature branch now and commit the ticket files there without an additional confirmation.
+- **A hosted tracker:** create one issue per ticket and apply `ready-for-agent` unless instructed otherwise. Include **Parent** (reference the source issue; omit for a project-shaped spec), **What to build**, **Acceptance criteria** (checkboxes), and **Blocked by** (real issue references or “None — can start immediately”). Use native blocking/sub-issue relationships where supported; otherwise record blockers in the body. Describe end-to-end behaviour, not layer-by-layer implementation tasks.
 - **Inside a project-shaped spec:** create one milestone per wave first, then set the project and wave milestone on each issue. If milestone tools are unavailable, retain wave names in ticket bodies and report the limitation; do not invent a substitute container. Keep the project's status and overview as published.
 
 Verify the resulting issues, project membership, and blocking relationships. Do not close or modify a parent issue as part of ticket publication. The implementation frontier is the tickets whose blockers are all done.
 
 ## 7. Review the completed result
 
-Return the spec link (or local path), size call, testing seams, and ticket links grouped by wave. For each ticket, summarize what it delivers and its blockers. Include meaningful assumptions, any publication limitations, and the branch and commits carrying design artifacts.
+Return the spec's path (local) or URL (hosted tracker), size call, testing seams, and ticket links grouped by wave. For each ticket, summarize what it delivers and its blockers. Include meaningful assumptions, any publication limitations, and the branch and commits carrying design artifacts.
 
 Only now ask whether the user wants changes to scope, seams, granularity, blockers, or waves. Apply requested revisions to the existing artifacts, keeping the spec, tickets, and dependencies consistent; do not recreate the whole set. A spec revision may update the parent when requested by the user.
 
-Name `/implement` against the single issue or completed spec/project as the next step, but leave starting implementation to the user.
+Name `/implement` against the single ticket (`tickets/01-<slug>.md` locally, the issue on a hosted tracker) or the completed spec folder/project as the next step, but leave starting implementation to the user.

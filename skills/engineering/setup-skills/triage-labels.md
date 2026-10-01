@@ -14,6 +14,8 @@ Use **one** of the two tables below — the label-only form for GitHub, GitLab, 
 | `ready-for-human` | `ready-for-human`    | Requires human implementation            |
 | `wontfix`         | `wontfix`            | Will not be actioned                     |
 
+On local markdown, a ticket's `Status:` line moves on from its triage role to `in-progress` and then `done`. Those are lifecycle values, not triage roles, and need no row here.
+
 ## Linear
 
 Linear expresses these across **two** dimensions: every issue has exactly one **workflow state**, plus any number of **labels**. Two roles are states, not labels — applying them as labels is wrong and leaves the issue in the wrong state.

@@ -21,6 +21,7 @@ Use these routing preferences, resolving names to models actually available in t
 | Coordination, difficult cross-ticket decisions | Astra, Fable, or equivalent |
 | Implementation, debugging, semantic acceptance checks, code review | Sol or Opus |
 | Bounded searches, known test/typecheck/lint commands, mechanical git/tracker operations | Luna or Sonnet |
+| Reading spec/ticket history (`/recall`) | Luna or Sonnet |
 
 Choose an available equivalent when a named model is absent. Select worker model and effort explicitly where supported: low effort for mechanical work, medium for ordinary implementation/review, higher only for demonstrated difficulty. Do not silently inherit the coordinator's model and maximum effort for every worker. If model overrides are unavailable, disclose that delegation still isolates context but cannot guarantee cheaper execution. If subagents are unavailable, agree an inline or split-session fallback with the user before building.
 
@@ -41,7 +42,7 @@ Delegate retrieval of the supplied project, issue, spec, URL, or agreed conversa
 | A project (a project-shaped spec) | Its issues, in wave order, then dependency order within each wave |
 | An issue that has children | Its children — never the parent |
 | An issue with no children | That issue alone, even when it belongs to a project |
-| A local `.scratch/<feature>/` directory | The files under its `issues/`, in number order |
+| A local `docs/specs/<YYYY-MM-DD>-<slug>/` directory | The files under its `tickets/`, in wave then number order |
 | A spec with no breakdown yet | Nothing — see below |
 | Nothing | Whatever the conversation has already agreed |
 
@@ -49,7 +50,7 @@ Delegate retrieval of the supplied project, issue, spec, URL, or agreed conversa
 
 **If the target is a spec with no breakdown**, stop and say so, and offer `/to-tickets` first. Build it directly only if the user hears that and still asks you to — a spec small enough to land in a single pass is possible, just rare enough to be worth confirming.
 
-The exception is a **single-slice spec**: an issue that `/to-spec` sized as one vertical slice and published whole, carrying its own Acceptance Criteria section. That is a unit of work, not a container missing its breakdown — build it, and don't offer `/to-tickets` against it.
+The exception is a **single-slice spec**: an issue that `/to-spec` sized as one vertical slice and published whole, carrying its own Acceptance Criteria section (locally, its `spec.md` plus `tickets/01-<slug>.md`). That is a unit of work, not a container missing its breakdown — build it, and don't offer `/to-tickets` against it.
 
 A one-ticket work list follows the same delegated loop; keep its brief and bookkeeping proportional to the work.
 
@@ -59,15 +60,15 @@ Report the work list, blockers, execution order, and selected worker models. Exp
 
 Do not seek per-ticket confirmation. Keep progress updates brief and communicate decisions or blockers without forwarding worker transcripts.
 
-Read the spec's Implementation and Testing Decisions and agreed seams once. Retain a compact decision summary and source pointers for briefs. Delegate branch and working-tree checks: start from the spec's branch where one exists, and stop if the initial tree contains uncommitted work. Have a worker establish the baseline checks before building; record the commands for later validators.
+Read the spec's Implementation and Testing Decisions and agreed seams once. Retain a compact decision summary and source pointers for briefs. Read only this feature's folder under `docs/specs/`; reach anything else in the archive through `/recall`. Delegate branch and working-tree checks: start from the spec's branch where one exists, and stop if the initial tree contains uncommitted work. Have a worker establish the baseline checks before building; record the commands for later validators.
 
-Maintain a small local run ledger outside the committed change: branch, decisions, ticket dependencies/states, base and landed commits, validation/review evidence pointers, blockers, and next action. Update it at ticket boundaries. After compaction or resumption, recover from this ledger and reconcile live git/tracker state through a worker instead of replaying the conversation.
+Maintain a small run ledger at `.scratch/implement/<feature-slug>.md`, gitignored and never committed: branch, decisions, ticket dependencies/states, base and landed commits, validation/review evidence pointers, blockers, and next action. Update it at ticket boundaries. After compaction or resumption, recover from this ledger and reconcile live git/tracker state through a worker instead of replaying the conversation.
 
 ### 3. Run the loop
 
 Take the first **frontier** ticket whose blockers are complete. Keep a single writer in a shared working tree; finish edits before validators or reviewers inspect it.
 
-**a. Start and brief.** Delegate the in-progress tracker update and capture the ticket's base commit. Give a fresh implementation worker:
+**a. Start and brief.** Delegate the in-progress tracker update (on the run's first ticket, also begin the spec) and capture the ticket's base commit. Give a fresh implementation worker:
 
 - ticket ID, scope, acceptance criteria, and relevant spec decisions/testing seams
 - source paths for cached ticket/spec content, domain glossary, and relevant ADRs
@@ -83,7 +84,7 @@ Take the first **frontier** ticket whose blockers are complete. Keep a single wr
 
 Send actionable failures to the implementation worker for one bounded repair pass, escalating its model if needed. Revalidate affected checks and re-review affected criteria after edits; evidence for an earlier tree cannot approve a later one. Reuse successful checks only while their inputs remain unchanged. Unresolved failures follow section 4.
 
-**e. Accept and land.** Only after independent validation and both review axes pass, delegate one commit referencing the ticket, then the completed tracker update and acceptance-criteria ticks. The worker must confirm the committed content matches the verified tree and return the commit ID and tracker outcome. Include only ticket files, keeping run artifacts out. The coordinator owns this gate; an implementer's success report alone cannot close a ticket.
+**e. Accept and land.** Only after independent validation and both review axes pass, delegate the completed tracker update, acceptance-criteria ticks, and one commit referencing the ticket. The worker must confirm the committed content matches the verified tree and return the commit ID and tracker outcome. A local ticket file's status changes and ticked criteria commit with that ticket's code; the run ledger and other run artifacts never do. The coordinator owns this gate; an implementer's success report alone cannot close a ticket.
 
 **f. Record and advance.** Update the ledger, release finished workers, and recompute the frontier. Do not reread completed tickets or their diffs. Use this compact report contract across assignments, omitting irrelevant fields:
 
@@ -112,7 +113,7 @@ When the list is exhausted, report once:
 
 Then stop. Do not re-plan the skipped work — what to do about an ambiguous slice is the user's call, and `/grill-with-docs` or `/to-tickets` is usually the answer.
 
-If everything completed and the container is a project, offer to move it to its completed state. Nothing else closes the project `/to-spec` opened.
+If the work list came from a spec and every ticket in it is now done, finish the spec. Nothing else closes the spec `/to-spec` opened.
 
 ## Running slices in parallel
 

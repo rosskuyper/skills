@@ -52,6 +52,14 @@ An issue is on the **frontier** when it is open and has no open blocker — no n
 
 `glab issue update <number> --assignee @me` before the first edit, so a parallel session sees the slice is taken. Close it with `glab issue close <number>` when it's done.
 
+## When a skill says "begin the spec"
+
+Nothing to do — an open spec issue already reads as in progress.
+
+## When a skill says "finish the spec"
+
+Close the spec issue, if there is one: `glab issue close <number>`.
+
 ## When a skill says "fetch the spec"
 
 Same as fetching a ticket — `glab issue view <number> --comments`. The spec is the issue body.

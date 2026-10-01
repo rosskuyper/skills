@@ -37,7 +37,7 @@ The skills are written as ordinary files you own and can edit. Nothing updates b
 
 In your agent, run it once per repo. It will:
 
-- Confirm your issue tracker — Linear by default (GitHub, GitLab, and local files are also supported)
+- Confirm your issue tracker — local Markdown files by default (Linear, GitHub, and GitLab are also supported)
 - Ask you what labels you apply to tickets when you triage them (`/triage` uses labels)
 - Ask you where you want to save any docs we create
 
@@ -157,9 +157,9 @@ Skills for daily code work.
 - **[triage](./skills/engineering/triage/SKILL.md)** — Move issues through a state machine of triage roles.
 - **[improve-codebase-architecture](./skills/engineering/improve-codebase-architecture/SKILL.md)** — Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.
 - **[setup-skills](./skills/engineering/setup-skills/SKILL.md)** — Configure this repo for the engineering skills (issue tracker, triage labels, domain doc layout). Run once per repo before using the other engineering skills.
-- **[to-spec](./skills/engineering/to-spec/SKILL.md)** — Turn the current conversation into a spec and publish it to the issue tracker. Work that is one vertical slice lands as a single issue with its own acceptance criteria, ready for `/implement`. Anything larger lands as an in-progress project whose overview links to a document per spec section on Linear, or a single issue elsewhere. Commits the session's design docs (glossary, ADRs) on a branch named for the spec. No interview — just synthesizes what you've already discussed.
-- **[to-project](./skills/engineering/to-project/SKILL.md)** — Publish a spec and complete ticket breakdown from the current conversation, choosing seams, waves, and blockers without intermediate confirmation; commit design artifacts, then ask for changes. One vertical slice becomes a single actionable issue.
-- **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break any plan, spec, or conversation into a set of tracer-bullet tickets, each declaring its blocking edges — written as text in a local file, or as native blocking links on a real tracker, landing inside the spec's project and grouped into a milestone per delivery wave.
+- **[to-spec](./skills/engineering/to-spec/SKILL.md)** — Turn the current conversation into a spec and publish it to the configured tracker. By default it lands as a dated folder under `docs/specs/`, committed like an ADR; one vertical slice also gets its first ticket so it is ready for `/implement`. On Linear, larger work becomes a project with a document per spec section; elsewhere a single issue. Commits the session's design docs (glossary, ADRs, spec folder) on a branch named for the feature. No interview — just synthesizes what you've already discussed.
+- **[to-project](./skills/engineering/to-project/SKILL.md)** — Publish a spec and complete ticket breakdown from the current conversation, choosing seams, waves, and blockers without intermediate confirmation; commit design artifacts, then ask for changes. One vertical slice becomes `spec.md` plus a single ticket.
+- **[to-tickets](./skills/engineering/to-tickets/SKILL.md)** — Break any plan, spec, or conversation into a set of tracer-bullet tickets, each declaring its blocking edges — by default one file per ticket beside the spec in `docs/specs/`, with blockers and wave as header lines; on a hosted tracker native blocking links, grouped into a milestone per delivery wave inside the spec's project.
 - **[implement](./skills/engineering/implement/SKILL.md)** — Orchestrate a spec, project, or ticket with a capable coordinator, fresh implementation workers, and delegated validation, review, and per-ticket commits. Route routine checks to smaller models and retain compact evidence summaries.
 - **[wayfinder](./skills/engineering/wayfinder/SKILL.md)** — Plan a huge chunk of work, more than one agent session can hold, as a shared map of decision tickets on the issue tracker — resolve them one at a time until the way to the destination is clear.
 
@@ -173,6 +173,7 @@ Skills for daily code work.
 - **[codebase-design](./skills/engineering/codebase-design/SKILL.md)** — Shared discipline and vocabulary for designing deep modules: a lot of behaviour behind a small interface, placed at a clean seam, testable through that interface.
 - **[code-review](./skills/engineering/code-review/SKILL.md)** — Two-axis review of the diff since a fixed point: **Standards** (does it follow the repo's coding standards, plus a Fowler smell baseline?) and **Spec** (does it faithfully implement the originating issue/spec?), run as parallel sub-agents so neither pollutes the other.
 - **[resolving-merge-conflicts](./skills/engineering/resolving-merge-conflicts/SKILL.md)** — Work through an in-progress git merge or rebase conflict hunk by hunk, resolving by intent traced to each side's primary source, then finish the operation — never `--abort`.
+- **[recall](./skills/engineering/recall/SKILL.md)** — Answer a bounded question from the spec archive (`docs/specs/`) — why something was decided, what an earlier spec said, whether it was tried before — by delegating the reading to a low-cost worker that returns a short answer with file pointers.
 
 ### Productivity
 
@@ -192,7 +193,7 @@ General workflow tools, not code-specific.
 
 ## Credits
 
-These skills are derived from [mattpocock/skills](https://github.com/mattpocock/skills) by Matt Pocock, used under the MIT license. This fork trims the set, defaults the issue tracker to Linear, and diverges from upstream — bugs here are mine, not his. See [LICENSE](./LICENSE).
+These skills are derived from [mattpocock/skills](https://github.com/mattpocock/skills) by Matt Pocock, used under the MIT license. This fork trims the set, defaults the issue tracker to local Markdown files committed under `docs/specs/`, and diverges from upstream — bugs here are mine, not his. See [LICENSE](./LICENSE).
 
 ## Maintaining this repository
 
