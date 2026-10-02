@@ -1,6 +1,6 @@
 ---
 name: to-tickets
-description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — by default one file per ticket beside the spec in `docs/specs/`, with blockers and wave as header lines; on a hosted tracker native blocking links, grouped into milestones inside the spec's project where it has one.
+description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — by default one file per ticket beside the spec in `docs/specs/`, with blockers and wave as header lines; on a hosted tracker native blocking links, grouped into milestones inside the spec's project where it has one. Publishes without intermediate confirmation (unless asked for at invocation), then asks for changes.
 disable-model-invocation: true
 ---
 
@@ -47,26 +47,15 @@ Then group the tickets into ordered **waves** — named phases of delivery, each
 
 **Wide refactors are the exception to vertical slicing.** A **wide refactor** is one mechanical change — rename a column, retype a shared symbol — whose **blast radius** fans across the whole codebase, so a single edit breaks thousands of call sites at once and no vertical slice can land green. Don't force it into a tracer bullet; sequence it as **expand–contract**. First expand: add the new form beside the old so nothing breaks. Then migrate the call sites over in batches sized by blast radius (per package, per directory), each batch its own ticket blocked by the expand, keeping CI green batch to batch because the old form still exists. Finally contract: delete the old form once no caller remains, in a ticket blocked by every migrate batch. When even the batches can't stay green alone, keep the sequence but let them share an integration branch that all block a final integrate-and-verify ticket — green is promised only there.
 
-### 4. Quiz the user
+### 4. Check the breakdown
 
-Present the proposed breakdown as a numbered list, grouped under its waves. For each ticket, show:
+Check that the tickets cover the source, each has observable acceptance criteria, none adds scope, and the blocking edges are acyclic and only name tickets that genuinely gate each one. Decide granularity, blockers, merges, splits, and waves yourself; do not pause for approval.
 
-- **Title**: short descriptive name
-- **Blocked by**: which other tickets (if any) must complete first
-- **What it delivers**: the end-to-end behaviour this ticket makes work
-
-Ask the user:
-
-- Does the granularity feel right? (too coarse / too fine)
-- Are the blocking edges correct — does each ticket only depend on tickets that genuinely gate it?
-- Should any tickets be merged or split further?
-- Are the waves the right checkpoints?
-
-Iterate until the user approves the breakdown.
+**Unless the user asked for confirmation when invoking the skill.** Then present the proposed breakdown before publishing — the same shape as the review in step 6 — ask the questions listed there, and iterate until the user approves it.
 
 ### 5. Publish the tickets to the configured tracker
 
-Publish the approved tickets. **How** depends on the tracker `/setup-skills` configured — the tickets are the same either way, only the shape of the blocking edges changes:
+Publish the tickets. **How** depends on the tracker `/setup-skills` configured — the tickets are the same either way, only the shape of the blocking edges changes:
 
 - **Local files (the default)** → write one file per ticket under `docs/specs/<YYYY-MM-DD>-<feature-slug>/tickets/<NN>-<slug>.md`, beside the spec's `spec.md`; when the source was not a published spec, create that folder dated today. Number from `01` in dependency order (blockers first, so waves stay contiguous in the numbering). Each file's `Blocked by:` lists the ticket numbers in this feature that gate it (cross-feature blockers by path), and its `Wave:` gives its wave number. Use the per-ticket file template below — one ticket per file, never a single combined file.
 - **A hosted issue tracker (GitHub, GitLab, Linear)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking / sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Apply the `ready-for-agent` triage label unless instructed otherwise — the tickets are agent-grabbable by construction.
@@ -81,7 +70,26 @@ Work the **frontier**: any ticket whose blockers are all done. For a purely line
 
 Do NOT close or modify any parent issue.
 
-Then commit the design artifacts — the ticket files (local), plus any `CONTEXT.md` or ADR changes the session left — so the breakdown doesn't dangle uncommitted in the working tree. Commit on the `<feature-slug>` branch where `/to-spec` left it checked out (with the spec as its first commit); otherwise offer to cut it. Reference the spec in the message by path (local) or URL (hosted tracker). Commit nothing else, and skip this if there is nothing to commit.
+Then commit the design artifacts — the ticket files (local), plus any `CONTEXT.md` or ADR changes the session left — so the breakdown doesn't dangle uncommitted in the working tree. Commit on the `<feature-slug>` branch where `/to-spec` left it checked out (with the spec as its first commit); otherwise create that branch now without an additional confirmation. Reference the spec in the message by path (local) or URL (hosted tracker). Commit nothing else, and skip this if there is nothing to commit.
+
+### 6. Review the published breakdown
+
+Present the published tickets as a numbered list, grouped under their waves, with each ticket's path (local) or link (hosted). For each ticket, show:
+
+- **Title**: short descriptive name
+- **Blocked by**: which other tickets (if any) must complete first
+- **What it delivers**: the end-to-end behaviour this ticket makes work
+
+Include any meaningful assumptions, publication limitations, and the commit carrying the ticket files.
+
+Only now ask whether the user wants changes:
+
+- Does the granularity feel right? (too coarse / too fine)
+- Are the blocking edges correct — does each ticket only depend on tickets that genuinely gate it?
+- Should any tickets be merged or split further?
+- Are the waves the right checkpoints?
+
+Apply requested revisions to the existing tickets — edit, renumber, merge, split, or retarget blockers and milestones in place — keeping numbering, blocking edges, and waves consistent; do not recreate the whole set. Commit revised ticket files the same way.
 
 Hand off with the spec's path (local) or URL (hosted), and name `/implement` against it as the next step. Do not run it yourself.
 
